@@ -1,4 +1,4 @@
-
+import mysqllink
 import requests,os,re,threading,time
 
 # 创建文件夹 用来存放图片
@@ -28,11 +28,14 @@ def downloadSogouPicture(word,page1,page2):
         pictureList = re.findall(pattern,text)
         # print(pictureList)
         # for eachpicture in pictureList:#每个图片地址 picturelist 有48项
+            # print(eachpicture)
         for count in range(0,20):
             print('count:'+str(count))
             try:
                 name = str(word) + '_' + str(page) + '_' + str(count)
                 type = '.jpg'
+                # 写入数据库
+                mysqllink.insertUrlName(pictureList[count],name)
                 # 多线程下载
                 mythread = threading.Thread(target=downloadPicture,args=(pictureList[count],name,type))
                 mythread.start()
@@ -61,5 +64,6 @@ def downloadPicture(url,name,type):
     f.write(picture.content)
     f.close()
 
-
-# downloadSogouPicture('炮姐',1,2)
+if __name__=='__main__':
+    downloadSogouPicture('索隆',0,1)
+    mysqllink.selectUrl()
